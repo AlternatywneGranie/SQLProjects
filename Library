@@ -1,0 +1,123 @@
+CREATE TABLE b_m (
+ nr_nip CHAR(50 CHAR) NOT NULL,
+ ulica CHAR(120),
+ nr_budynku NUMBER,
+ miejscowość VARCHAR2(12 BYTE),
+ gmina CHAR(120),
+ adres_internetowy VARCHAR2(25 CHAR),
+ mail VARCHAR2(25 CHAR),
+ kontakt INTEGER
+);
+ALTER TABLE b_m ADD CONSTRAINT b_m_pk PRIMARY KEY ( nr_nip );
+CREATE TABLE czytelnik (
+ id_czytelnika INTEGER NOT NULL,
+ imię_czytelnika VARCHAR2(11 CHAR),
+ nazwisko_czytelnika VARCHAR2(5012 CHAR),
+ kontakt INTEGER,
+ mail VARCHAR2(25 CHAR)
+);
+ALTER TABLE czytelnik ADD CONSTRAINT czytelnik_pk PRIMARY KEY ( id_czytelnika );
+CREATE TABLE książka (
+ id_książki INTEGER NOT NULL,
+ "Rok/numer_wydania" NUMBER,
+ gatunek CHAR(120),
+ imię_autora VARCHAR2(11 CHAR),
+ nazwisko_autora VARCHAR2(5012 CHAR),
+ pseudonim CHAR(120),
+ wydawnictwo CHAR(120),
+ tytuł CHAR(120)
+);
+ALTER TABLE książka ADD CONSTRAINT książka_pk PRIMARY KEY ( id_książki );
+CREATE TABLE mandat (
+ nr_naliczenia INTEGER NOT NULL,
+ data_rozpoczęcia_naliczania INTEGER,
+ cennik NUMBER,
+ pracownik_id_pracownika INTEGER NOT NULL,
+ czytelnik_id_czytelnika INTEGER NOT NULL
+);
+ALTER TABLE mandat ADD CONSTRAINT mandat_pk PRIMARY KEY ( nr_naliczenia );
+CREATE TABLE pracownik (
+ id_pracownika INTEGER NOT NULL,
+ imię_pracownika VARCHAR2(11 CHAR),
+ nazwisko_pracownika VARCHAR2(5012 CHAR),
+ telefon_pracownika INTEGER
+);
+ALTER TABLE pracownik ADD CONSTRAINT pracownik_pk PRIMARY KEY
+( id_pracownika );
+CREATE TABLE rezerwacja (
+ nr_rezerwacji INTEGER NOT NULL,
+ rezerwacja_od NUMBER,
+ książka_id_książki INTEGER NOT NULL,
+ czytelnik_id_czytelnika INTEGER NOT NULL
+);
+ALTER TABLE rezerwacja
+ ADD CONSTRAINT rezerwacja_pk PRIMARY KEY ( nr_rezerwacji,
+ książka_id_książki,
+ czytelnik_id_czytelnika );
+CREATE TABLE umowa_o_pracę (
+ data_rozpoczęcia NUMBER,
+ data_zakończenia NUMBER,
+ b_m_nr_nip CHAR(50 CHAR) NOT NULL,
+ pracownik_id_pracownika INTEGER NOT NULL
+);
+ALTER TABLE umowa_o_pracę ADD CONSTRAINT umowa_o_pracę_pk PRIMARY KEY
+( b_m_nr_nip,
+ pracownik_id_pracownika );
+CREATE TABLE wypożyczenie (
+ nr_wypożyczenia INTEGER NOT NULL,
+ data_wypożyczenia INTEGER,
+ termin_zwrotu NUMBER,
+ książka_id_książki INTEGER NOT NULL,
+ pracownik_id_pracownika INTEGER NOT NULL,
+ czytelnik_id_czytelnika INTEGER NOT NULL
+);
+ALTER TABLE wypożyczenie ADD CONSTRAINT wypożyczenie_pk PRIMARY KEY
+( nr_wypożyczenia,
+ książka_id_książki );
+CREATE TABLE zamówienie (
+ nr_zamówienia INTEGER NOT NULL,
+ id_pracownika INTEGER,
+ id_czytelnika INTEGER,
+ data_odebrania_zamówienia INTEGER,
+ pracownik_id_pracownika INTEGER NOT NULL,
+ książka_id_książki INTEGER NOT NULL
+);
+ALTER TABLE zamówienie
+ ADD CONSTRAINT zamówienie_pk PRIMARY KEY ( nr_zamówienia,
+ pracownik_id_pracownika,
+ książka_id_książki );
+ALTER TABLE mandat
+ ADD CONSTRAINT mandat_czytelnik_fk FOREIGN KEY ( czytelnik_id_czytelnika )
+ REFERENCES czytelnik ( id_czytelnika );
+ALTER TABLE mandat
+ ADD CONSTRAINT mandat_pracownik_fk FOREIGN KEY ( pracownik_id_pracownika )
+ REFERENCES pracownik ( id_pracownika );
+ALTER TABLE rezerwacja
+ ADD CONSTRAINT rezerwacja_czytelnik_fk FOREIGN KEY ( czytelnik_id_czytelnika )
+ REFERENCES czytelnik ( id_czytelnika );
+ALTER TABLE rezerwacja
+ ADD CONSTRAINT rezerwacja_książka_fk FOREIGN KEY ( książka_id_książki )
+ REFERENCES książka ( id_książki );
+ALTER TABLE umowa_o_pracę
+ ADD CONSTRAINT umowa_o_pracę_b_m_fk FOREIGN KEY ( b_m_nr_nip )
+ REFERENCES b_m ( nr_nip );
+ALTER TABLE umowa_o_pracę
+ ADD CONSTRAINT umowa_o_pracę_pracownik_fk FOREIGN KEY
+( pracownik_id_pracownika )
+ REFERENCES pracownik ( id_pracownika );
+ALTER TABLE wypożyczenie
+ ADD CONSTRAINT wypożyczenie_czytelnik_fk FOREIGN KEY ( czytelnik_id_czytelnika )
+ REFERENCES czytelnik ( id_czytelnika );
+ALTER TABLE wypożyczenie
+ ADD CONSTRAINT wypożyczenie_książka_fk FOREIGN KEY ( książka_id_książki )
+ REFERENCES książka ( id_książki );
+ALTER TABLE wypożyczenie
+ ADD CONSTRAINT wypożyczenie_pracownik_fk FOREIGN KEY ( pracownik_id_pracownika
+)
+ REFERENCES pracownik ( id_pracownika );
+ALTER TABLE zamówienie
+ ADD CONSTRAINT zamówienie_książka_fk FOREIGN KEY ( książka_id_książki )
+ REFERENCES książka ( id_książki );
+ALTER TABLE zamówienie
+ ADD CONSTRAINT zamówienie_pracownik_fk FOREIGN KEY ( pracownik_id_pracownika )
+ REFERENCES pracownik ( id_pracownika );
